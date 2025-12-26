@@ -32,7 +32,7 @@ class FootballGameAnalyzer:
         self.stop_monitoring = False
         
         # Retry configuration
-        self.max_retries = 5
+        self.max_retries = 1
         self.base_retry_delay = 5  # seconds
         self.max_retry_delay = 120  # 2 minutes max
 
