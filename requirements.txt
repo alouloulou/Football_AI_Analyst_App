@@ -6,4 +6,5 @@ httpx
 ffmpeg-python
 psutil
 tqdm
-ai-zai
+zai-sdk
+python-dotenv
