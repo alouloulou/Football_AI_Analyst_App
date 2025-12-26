@@ -8,3 +8,4 @@ psutil
 tqdm
 zai-sdk
 python-dotenv
+sniffio
