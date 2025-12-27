@@ -32,7 +32,7 @@ class FootballGameAnalyzer:
         self.stop_monitoring = False
         
         # Retry configuration
-        self.max_retries = 1
+        self.max_retries = 5
         self.base_retry_delay = 5  # seconds
         self.max_retry_delay = 120  # 2 minutes max
 
@@ -170,12 +170,22 @@ class FootballGameAnalyzer:
         if not os.path.exists(video_path):
             return {"status": "failed", "error": f"{video_path} not found"}
 
-        # --- STEP 1: COMPRESSION ---
-        temp_video = f"{video_path}_compressed.mp4"
-        ready_video = self.compress_video(video_path, temp_video)
+        # --- CHECK IF COMPRESSION IS NEEDED ---
+        file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
+        self._log(f"Input video size: {file_size_mb:.2f} MB")
         
-        if ready_video is None:
-            return {"status": "failed", "error": "Compression failed"}
+        temp_video = None # Initialize temp_video to None
+        if file_size_mb <= 15:
+            # Video is already small (mobile compressed it), skip compression
+            self._log(f"Video is small enough ({file_size_mb:.1f} MB <= 15 MB), skipping compression")
+            ready_video = video_path
+        else:
+            # --- STEP 1: COMPRESSION ---
+            temp_video = f"{video_path}_compressed.mp4"
+            ready_video = self.compress_video(video_path, temp_video)
+            
+            if ready_video is None:
+                return {"status": "failed", "error": "Compression failed"}
 
         # --- STEP 2: BASE64 ENCODING ---
         try:
@@ -220,8 +230,8 @@ Provide a comprehensive analysis with scores and details:
         
         result = self._call_api_with_retry(video_base64, analysis_prompt)
 
-        # Cleanup
-        if os.path.exists(temp_video):
+        # Cleanup temp file if it was created
+        if temp_video and os.path.exists(temp_video):
             os.remove(temp_video)
 
         if result["success"]:
