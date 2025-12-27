@@ -20,7 +20,8 @@ async def analyze_video(
     player_number: str = Form(...),
     team: str = Form(...),
     jersey_color: str = Form(...),
-    user_id: str = Form(...)  # Kept for logging/tracking
+    user_id: str = Form(...),
+    user_notes: str = Form(None)  # Optional user context
 ):
     # 1. Save uploaded file temporarily
     temp_filename = f"upload_{uuid.uuid4()}.mp4"
@@ -35,7 +36,7 @@ async def analyze_video(
     # 2. Run Analysis
     try:
         analyzer = FootballGameAnalyzer()
-        result = analyzer.analyze_game(temp_path, player_number, team, jersey_color)
+        result = analyzer.analyze_game(temp_path, player_number, team, jersey_color, user_notes)
         
         # Cleanup upload
         if os.path.exists(temp_path):
