@@ -165,7 +165,7 @@ class FootballGameAnalyzer:
                 
         return {"success": False, "error": "Unknown error", "attempts": self.max_retries}
 
-    def analyze_game(self, video_path, player_number, team, jersey_color):
+    def analyze_game(self, video_path, player_number, team, jersey_color, user_notes=None):
         
         if not os.path.exists(video_path):
             return {"status": "failed", "error": f"{video_path} not found"}
@@ -195,7 +195,18 @@ class FootballGameAnalyzer:
             return {"status": "failed", "error": f"Encoding failed: {str(e)}"}
 
         # --- STEP 3: AI ANALYSIS ---
-        analysis_prompt = f"""You are an expert football analyst. Analyze this game footage focusing on player #{player_number} wearing {jersey_color} for {team}.
+        analysis_prompt = f"""You are an expert football analyst. Analyze this video footage focusing on player #{player_number} wearing {jersey_color} for {team}.
+
+CRITICAL INSTRUCTIONS FOR HIGHLIGHT VIDEOS:
+1. This is a HIGHLIGHT REEL, not a continuous game. It contains multiple discontinuous clips with cuts.
+2. DO NOT assume context carries over between clips. Treat each scene as a new situation.
+3. STRICT IDENTIFICATION: Only attribute actions to Player #{player_number} in {jersey_color} if you CLEARLY see their number or unique position/style.
+4. If the player is not involved in a clip, IGNORE that clip. Do not guess.
+5. Pay attention to TEAM COLORS consistently. Do not confuse the player's team with the opponent.
+
+USER PROVIDED CONTEXT / NOTES:
+"{user_notes if user_notes else 'None provided'}"
+(Use these notes to assist in identifying the player or specific moments, but always enable strict visual verification.)
 
 Provide a comprehensive analysis with scores and details:
 
@@ -209,15 +220,15 @@ Provide a comprehensive analysis with scores and details:
    FOC: [score] - Focus (concentration, composure)
 
 2. KEY HIGHLIGHTS:
-   - Major moments involving the player
-   - Best plays and contributions
-   - Notable strengths shown
+   - Major moments involving SPECIFICALLY Player #{player_number}.
+   - Best plays and contributions (Timestamp if possible).
+   - Notable strengths shown.
 
 3. AREAS FOR IMPROVEMENT:
-   - Weaknesses observed
-   - Tactical adjustments needed
+   - Weaknesses observed in specific clips.
+   - Tactical adjustments needed.
 
-4. MATCH STATISTICS (estimate):
+4. MATCH STATISTICS (estimate based on visible clips):
    - Touches on ball
    - Passes (successful/total)
    - Shots (on target/total)
