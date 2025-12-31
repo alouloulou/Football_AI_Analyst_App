@@ -237,7 +237,19 @@ Provide a comprehensive analysis with scores and details:
    - Distance covered
 
 5. OVERALL ASSESSMENT:
-   Brief summary of performance and rating out of 10."""
+   Brief summary of performance and rating out of 10.
+
+6. SKILL BREAKDOWN FOR TRAINING (provide JSON for each):
+   For each of these 6 skills, provide a JSON object:
+   - PASSING: {{ "score": 1-100, "explanation": "1-2 sentences", "drill": {{ "name": "...", "duration": "X min" }} }}
+   - SHOOTING: {{ "score": 1-100, "explanation": "...", "drill": {{ "name": "...", "duration": "X min" }} }}
+   - PRESSING: {{ "score": 1-100, "explanation": "...", "drill": {{ "name": "...", "duration": "X min" }} }}
+   - BALL_CONTROL: {{ "score": 1-100, "explanation": "...", "drill": {{ "name": "...", "duration": "X min" }} }}
+   - COMPOSURE: {{ "score": 1-100, "explanation": "...", "drill": {{ "name": "...", "duration": "X min" }} }}
+   - POSITIONING: {{ "score": 1-100, "explanation": "...", "drill": {{ "name": "...", "duration": "X min" }} }}
+   
+   Example format:
+   PASSING: {{"score": 72, "explanation": "Good short passing but long balls lack accuracy.", "drill": {{"name": "Long Ball Target Practice", "duration": "15 min"}}}}"""
         
         result = self._call_api_with_retry(video_base64, analysis_prompt)
 
